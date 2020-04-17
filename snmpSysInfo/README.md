@@ -11,4 +11,4 @@ For the program to run correctly, it requires:
 
 ### How to Run
 It needs exec permissions if you want to run it with ./ so run the command `chmod +x snmpSysInfo.py` and after that you can run it with `./snmpSysInfo.py`
-Otherwise run it with python3 snmpSysInfo.py
+Otherwise run it with `python3 snmpSysInfo.py`
