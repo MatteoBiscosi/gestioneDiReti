@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Import
 from time import time
 from time import sleep
