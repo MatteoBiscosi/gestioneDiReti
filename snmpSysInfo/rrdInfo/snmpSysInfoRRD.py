@@ -190,7 +190,9 @@ def createCpu():
             "--start", "now",
             "--step", "5",
             "DS:cpu:GAUGE:10:0:100",
-            "RRA:AVERAGE:0.5:1:17280")
+            "RRA:AVERAGE:0.5:1:17280",
+            "RRA:HWPREDICT:360:0.1:0.0035:288"
+        )
     except:
         return False
 
@@ -206,7 +208,9 @@ def createRam(session):
             "--start", "now",
             "--step", "5",
             "DS:ram:GAUGE:10:0:" + rsp.value,
-            "RRA:AVERAGE:0.5:1:17280")
+            "RRA:AVERAGE:0.5:1:17280",
+            "RRA:HWPREDICT:360:0.1:0.0035:288"
+        )
     except:
         return False
 
@@ -221,7 +225,9 @@ def createDisk():
             "--start", "now",
             "--step", "5",
             "DS:disk:GAUGE:10:0:100",
-            "RRA:AVERAGE:0.5:1:17280")
+            "RRA:AVERAGE:0.5:1:17280",
+            "RRA:HWPREDICT:360:0.1:0.0035:288"
+        )
     except:
         return False
 
