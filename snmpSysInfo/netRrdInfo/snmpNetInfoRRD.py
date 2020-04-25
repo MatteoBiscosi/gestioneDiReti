@@ -37,11 +37,11 @@ def printSysInfo(hostname, version, community):
     return session
 
 
-# Function that controls the flow of the various functions that prints CPU, Ram and Disk info
-def printStats(hostname, version, community, session):
+# Function that controls the flow of the various functions that prints InOctets and OutOctets info into .rrd files
+def printStats(session):
 
     # Checking if the directory and files exist otherwise it's gonna create them
-    dir, cpu, ram, disk = checkRrd(session = session)
+    dir, inNet, outNet = checkRrd()
 
     # Problems while creating the file, program shutting down
     if not dir:
@@ -49,32 +49,26 @@ def printStats(hostname, version, community, session):
         exit(1)
 
     else:
-        if not cpu and not disk and not ram:
+        if not inNet and not outNet:
             print("ERROR: Problem while creating the necessary files, the program will now terminate.")
             exit(1)
 
     # Files created, starting the update cicle
     currentTime = time()
 
-    cpuAvailable = False
-    ramAvailable = False
-    diskAvailable = False
+    inAvailable = False
+    outAvailable = False
 
-    if cpu:
-        cpuAvailable = printCpu(hostname=hostname, version=version, community=community, session=session)
+    if inNet:
+        inAvailable = printInOctet(session=session)
 
-    if ram:
-        ramAvailable = printRam(hostname=hostname, version=version, community=community, session=session)
-
-    if disk:
-        diskAvailable = printDisk(hostname=hostname, version=version, community=community, session=session)
+    if outNet:
+        outAvailable = printOutOctet(session=session)
 
     # Checking that at last an info is available
-    if cpuAvailable is False and ramAvailable is False and diskAvailable is False:
+    if inAvailable is False and outAvailable is False:
         print("ERROR: None of the system info is accessible, the program will now terminate.")
         exit(1)
-
-    #print("\t", cpuAvailable, "\n\t", ramAvailable, "\n\t", diskAvailable, "\n")
 
     iterations = 17279
     seconds = 5
@@ -93,25 +87,21 @@ def printStats(hostname, version, community, session):
 
         currentTime = time()
 
-        if cpuAvailable is True:
-            cpuAvailable = printCpu(hostname=hostname, version=version, community=community, session=session)
+        if inAvailable is True:
+            inAvailable = printInOctet(session=session)
 
-        if ramAvailable is True:
-            ramAvailable = printRam(hostname=hostname, version=version, community=community, session=session)
-
-        if diskAvailable is True:
-            diskAvailable = printDisk(hostname=hostname, version=version, community=community, session=session)
+        if outAvailable is True:
+            outAvailable = printOutOctet(session=session)
 
         iterations -= 1
-        #print("\t", cpuAvailable, "\n\t", ramAvailable, "\n\t", diskAvailable, "\n")
 
 
-# Function used to print CPU info
-def printCpu(hostname, version, community, session):
+# Function used to print inOctet info
+def printInOctet(session):
     try:
-        rsp = session.get('.1.3.6.1.4.1.2021.11.9.0')
+        rsp = session.get('.1.3.6.1.2.1.2.2.1.16.1')
         rrdtool.update(
-            "./rrdLogs/cpu.rrd",
+            "./rrdLogs/inOctet.rrd",
             "N:" + rsp.value)
     except:
         return False
@@ -119,25 +109,12 @@ def printCpu(hostname, version, community, session):
     return True
 
 
-# Function used to print Ram info
-def printRam(hostname, version, community, session):
+# Function used to print the outOctet info
+def printOutOctet(session):
     try:
-        rsp = session.get('.1.3.6.1.4.1.2021.4.6.0')
+        rsp = session.get('.1.3.6.1.2.1.2.2.1.16.2')
         rrdtool.update(
-            "./rrdLogs/ram.rrd",
-            "N:" + rsp.value)
-    except:
-        return False
-
-    return True
-
-
-# Function used to print Disk info
-def printDisk(hostname, version, community, session):
-    try:
-        rsp = session.get('.1.3.6.1.4.1.2021.9.1.10.1')
-        rrdtool.update(
-            "./rrdLogs/disk.rrd",
+            "./rrdLogs/outOctet.rrd",
             "N:" + rsp.value)
     except:
         return False
@@ -147,29 +124,26 @@ def printDisk(hostname, version, community, session):
 
 # Function used to check if the log's directory and the various .rrd files exists
 # if not it's gonna create them
-def checkRrd(session):
+def checkRrd():
 
-    dir, cpu, ram, disk = True, True, True, True
+    dir, inNet, outNet = True, True, True
 
     if os.path.isdir("./rrdLogs"):
-        if not os.path.exists("./rrdLogs/cpu.rrd"):
-            cpu = createCpu()
+        if not os.path.exists("./rrdLogs/inOctet.rrd"):
+            inNet = createInOctet()
 
-        if not os.path.exists("./rrdLogs/ram.rrd"):
-            ram = createRam(session)
+        if not os.path.exists("./rrdLogs/outOctet.rrd"):
+            outNet = createOutOctet()
 
-        if not os.path.exists("./rrdLogs/disk.rrd"):
-            disk = createDisk()
     else :
         dir = createDir()
-        cpu = createCpu()
-        ram = createRam(session)
-        disk = createDisk()
+        inNet = createInOctet()
+        outNet = createOutOctet()
 
     if dir:
-        return dir, cpu, ram, disk
+        return dir, inNet, outNet
 
-    return False, False, False, False
+    return False, False, False
 
 
 # Function that creates the directory for .rrd files
@@ -182,14 +156,14 @@ def createDir():
     return True
 
 
-# Function that create cpu .rrd file
-def createCpu():
+# Function that create inOctet .rrd file
+def createInOctet():
     try:
         rrdtool.create(
-            "./rrdLogs/cpu.rrd",
+            "./rrdLogs/inOctet.rrd",
             "--start", "now",
             "--step", "5",
-            "DS:cpu:GAUGE:10:0:100",
+            "DS:inOctet:COUNTER:10:0:U",
             "RRA:AVERAGE:0.5:1:17280",
             "RRA:HWPREDICT:360:0.1:0.0035:288"
         )
@@ -199,32 +173,14 @@ def createCpu():
     return True
 
 
-# Function that create cpu .rrd file
-def createRam(session):
-    try:
-        rsp = session.get(".1.3.6.1.4.1.2021.4.5.0")
-        rrdtool.create(
-            "./rrdLogs/ram.rrd",
-            "--start", "now",
-            "--step", "5",
-            "DS:ram:GAUGE:10:0:" + rsp.value,
-            "RRA:AVERAGE:0.5:1:17280",
-            "RRA:HWPREDICT:360:0.1:0.0035:288"
-        )
-    except:
-        return False
-
-    return True
-
-
-# Function that create cpu .rrd file
-def createDisk():
+# Function that create outOctet .rrd file
+def createOutOctet():
     try:
         rrdtool.create(
-            "./rrdLogs/disk.rrd",
+            "./rrdLogs/outOctet.rrd",
             "--start", "now",
             "--step", "5",
-            "DS:disk:GAUGE:10:0:100",
+            "DS:outOctet:COUNTER:10:0:U",
             "RRA:AVERAGE:0.5:1:17280",
             "RRA:HWPREDICT:360:0.1:0.0035:288"
         )
@@ -273,7 +229,7 @@ def main():
     # Checking agent info and taking the session
     session = printSysInfo(hostname=hostname, version=version, community=community)
 
-    printStats(hostname=hostname, version=version, community=community, session=session)
+    printStats(session=session)
 
 
 main()
