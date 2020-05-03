@@ -7,6 +7,7 @@ The program is gonna monitor localhost interfaces and every host that is sending
 For the program to run correctly, it requires:
 - python3: obtainable in linux version with `sudo apt-get install python3`
 - scapy: python3 library, obtainable with `pip3 install scapy`
+- netifaces: python3 library, obtainable with `pip3 install netifaces`
 - influxdb_client: python3 library, obtainable with `pip3 install influxdb_client`
 - influx db: influx database needed, see https://www.influxdata.com/ for more info
 
