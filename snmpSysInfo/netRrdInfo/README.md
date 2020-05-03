@@ -1,7 +1,7 @@
 ## SNMP System Info
 
 ### Description
-The program `snmpSysInfoRRD.py` is gonna ask to the user for the various info about an snmp agent (hostname, version and community) and search for it. If the info are correct and the agent is up, the program's gonna get some general info about the agent and periodically asks for RAMs, CPUs and Disks usage (if available) and add them to an .rrd file. It's possible to see the graph of the values in the last hour with the program `snmpSysGraph.py`, that's gonna create a .png graph in graph/ directory.
+The program `snmpNetInfoRRD.py` is gonna ask to the user for the various info about an snmp agent (hostname, version and community) and search for it. If the info are correct and the agent is up, the program's gonna get some general info about the agent and periodically asks for inOctets and outOctets (if available) and add them to an .rrd file. It's possible to see the graph of the values in the last hour with the program `snmpNetGraph.py`, that's gonna create a .png graph in graph/ directory.
 
 ### Requirements
 For the program to run correctly, it requires:
