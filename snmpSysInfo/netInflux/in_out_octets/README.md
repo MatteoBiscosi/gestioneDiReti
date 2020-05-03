@@ -9,7 +9,7 @@ For the program to run correctly, it requires:
 - easysnmp: python3 library, obtainable with `pip3 install easysnmp`
 - snmpAgent: an snmp agent reachable and configured in a way that the program che get the info about his machine
 - influxdb_client: python3 library, obtainable with `pip3 install influxdb_client`
-- influx db: influx database needed, see [a link](https://www.influxdata.com/) for more info
+- influx db: influx database needed, see [influxdb](https://www.influxdata.com/) for more info
 
 ### How to Run
 It should be executable with `./snmpNetInfoInflux.py`.
