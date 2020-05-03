@@ -148,9 +148,9 @@ def sleep_fun(start_time):
 def main():
     try:
         # Checking if the program is running as root
-        #if (os.geteuid() != 0):
-        #    print("You need to be superuser to capture traffic")
-        #    sys.exit(0)
+        if (os.geteuid() != 0):
+            print("You need to be superuser to capture traffic")
+            sys.exit(0)
 
         # Parsing input
         args = parsingArgs()
