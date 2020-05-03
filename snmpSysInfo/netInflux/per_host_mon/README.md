@@ -11,7 +11,7 @@ For the program to run correctly, it requires:
 - influx db: influx database needed, see https://www.influxdata.com/ for more info
 
 ### How to Run
-Root user privilegies required to run the program.
+Root user privilegies required to run the program.\n
 It should be executable with `sudo ./hostMonitoring.py`.
 If it needs exec permissions (even if it should already have them) if you want to run it with ./ run the command `chmod u+x hostMonitoring.py` and after that you can run it with `sudo ./hostMonitoring.py`
 Otherwise run it with `sudo python3 hostMonitoring.py`.
