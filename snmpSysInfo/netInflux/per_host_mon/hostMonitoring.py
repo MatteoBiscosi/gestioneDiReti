@@ -102,7 +102,7 @@ def sendValues(sniffer_list, write_api, db_bucket):
     try:
         value_list = []
 
-        print(sniffer_list)
+        #print(sniffer_list)
 
         for sniffer in sniffer_list.values():
             for k in sniffer.outBytesDic:
@@ -117,7 +117,7 @@ def sendValues(sniffer_list, write_api, db_bucket):
             for k in sniffer.inBytesDicBroad:
                 value_list.append('inBytesBroad,location=' + sniffer.interface + ',src=' + k + ' bytes=' + str(sniffer.inBytesDicBroad[k]))
 
-        print(value_list)
+        #print(value_list)
 
         if value_list is not None:
             write_api.write(bucket=db_bucket, record=value_list)
