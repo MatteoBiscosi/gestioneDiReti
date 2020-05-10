@@ -61,9 +61,8 @@ def influxDBConnection(db_url, db_token, db_org):
                                 org=db_org)
 
         write_api = client.write_api(write_options=SYNCHRONOUS)
-    except:
+    except Exception:
         print('ERROR: Database unavailable, check if -u, -t and -o options are correct')
-        exit(1)
 
     return client, write_api
 
@@ -71,6 +70,7 @@ def influxDBConnection(db_url, db_token, db_org):
 # Function used to create Threads that sniff packets, one thread per interface
 def sniff_pkt(interface, ipv4, sniffer_list, counter):
     sniffer_list[counter] = Sniffer(interface=interface, ipv4=ipv4)
+    sniffer_list[counter].daemon = True
     sniffer_list[counter].start()
 
 
@@ -122,11 +122,10 @@ def sendValues(sniffer_list, write_api, db_bucket):
         if value_list is not None:
             write_api.write(bucket=db_bucket, record=value_list)
 
-
     except KeyboardInterrupt:
         sys.exit(0)
 
-    except:
+    except Exception:
         print('ERROR: while adding values to the database, check bucket name (-b option)')
         sys.exit(0)
 
@@ -139,35 +138,37 @@ def sleep_fun(start_time):
         if sleepTime < 5:
             sleepTime = 5 - sleepTime
             sleep(sleepTime)
-
     except KeyboardInterrupt:
         sys.exit(0)
+
 
 
 # Main function
 def main():
-    try:
-        # Checking if the program is running as root
-        if (os.geteuid() != 0):
-            print("You need to be superuser to capture traffic")
-            sys.exit(0)
-
-        # Parsing input
-        args = parsingArgs()
-
-        # Getting info about local interfaces
-        addr_if, addr_ip = getIP()
-
-        # Connecting to DB
-        db,write_api = influxDBConnection(db_url=args.db_url, db_token=args.db_token, db_org=args.db_org)
-
-        # Starting infinite loop
-        lifeCicle(write_api=write_api, db_bucket=args.db_bucket, addr_ip=addr_ip, addr_if=addr_if)
-    except KeyboardInterrupt:
+    # Checking if the program is running as root
+    if (os.geteuid() != 0):
+        print("You need to be superuser to capture traffic")
         sys.exit(0)
 
+    # Parsing input
+    args = parsingArgs()
 
-main()
+    # Getting info about local interfaces
+    addr_if, addr_ip = getIP()
+
+    # Connecting to DB
+    db,write_api = influxDBConnection(db_url=args.db_url, db_token=args.db_token, db_org=args.db_org)
+
+    # Starting infinite loop
+    lifeCicle(write_api=write_api, db_bucket=args.db_bucket, addr_ip=addr_ip, addr_if=addr_if)
+
+try:
+    main()
+except KeyboardInterrupt:
+    sys.exit(0)
+except Exception:
+    print("Error occurred while running, program is shutting down.")
+    sys.exit(0)
 
 
 

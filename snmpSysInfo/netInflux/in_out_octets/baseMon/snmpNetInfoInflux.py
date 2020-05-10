@@ -20,22 +20,24 @@ def parsingArgs():
     parser.add_argument('-v', choices=[1, 2, 3], metavar=1, type=int, nargs='?', default=1, dest='version',
                         help='snmp version: 1, 2, 3')
 
-    parser.add_argument('-c', metavar='systemonly', type=str, nargs='?', default='public', dest='community',
+    parser.add_argument('-c', metavar='public', type=str, nargs='?', default='public', dest='community',
                         help='snmp community')
 
     parser.add_argument('-i', metavar='localhost', type=str, nargs='?', default='localhost', dest='hostname',
                         help='snmp hostname')
 
-    parser.add_argument('-u', metavar='url', type=str, nargs='?', default='https://us-central1-1.gcp.cloud2.influxdata.com', dest='db_url',
+    parser.add_argument('-u', metavar='url', type=str, nargs='?', default='http://localhost:9999', dest='db_url',
                         help='influxDB url')
 
-    parser.add_argument('-t', metavar='token', type=str, nargs='?', default='yHmDok5I-FnSlPkxous9ecUktp6rh3Jy8g0k48wQnhACLUOnsmPKZV5EED1wqzYmoOo32iaLoyzKM4tV77VkqA==', dest='db_token',
+    parser.add_argument('-t', metavar='token', type=str, nargs='?',
+                        default='iBkhHJ7Bp_Ekf7e42zFtqPgenZfnbVKnKseAwrxRoy6CuZPu2_667VGTMg2D5HYAJpkK9xM9wpHr6JAx8E-ZDA==',
+                        dest='db_token',
                         help='influxDB token')
 
     parser.add_argument('-o', metavar='organization', type=str, nargs='?', default='m.biscosi', dest='db_org',
                         help='influxDB organization')
 
-    parser.add_argument('-b', metavar='bucket', type=str, nargs='?', default='localhost', dest='db_bucket',
+    parser.add_argument('-b', metavar='bucket', type=str, nargs='?', default='host_monitoring', dest='db_bucket',
                         help='influxDB bucket')
 
     args = parser.parse_args()
@@ -113,10 +115,12 @@ def addValue(inOctets, outOctets, db, write_api, db_bucket, agent_loc):
     try:
         # InOctets values
         value = Point("inOctets").tag("location", agent_loc).field("bytes", int(inOctets))
+        print(value)
         write_api.write(bucket=db_bucket, record=value)
 
         # OutOctets values
         value = Point("outOctets").tag("location", agent_loc).field("bytes", int(outOctets))
+        print(value)
         write_api.write(bucket=db_bucket, record=value)
     except KeyboardInterrupt:
         exit(1)
